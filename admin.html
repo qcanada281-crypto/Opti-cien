@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Opti-Look — Administration & Centre Optométrique</title>
+  
+  <!-- High-res Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232DBFC3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='6' cy='12' r='4'/><circle cx='18' cy='12' r='4'/><path d='M10 12h4'/></svg>" />
+
+  <!-- PWA Manifest & Offline Capabilities -->
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#0B1120" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Google Fonts (Outfit & Playfair Display) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Suppress CDN warning -->
+  <script>
+    const _origWarn = console.warn;
+    console.warn = function(...args) {
+      if (typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+      _origWarn.apply(console, args);
+    };
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              turquoise: '#2DBFC3',
+              dark: '#0B1120',
+              card: '#131D31',
+              border: '#1E293B',
+              gold: '#C5A880'
+            }
+          },
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            editorial: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #0B1120;
+      color: #F1F5F9;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B1120;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E293B;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2DBFC3;
+    }
+  </style>
+</head>
+
+<body class="bg-[#0B1120] text-slate-100 antialiased min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
+
+  <!-- Top Admin Navbar -->
+  <header class="sticky top-0 z-40 bg-[#0E172A]/95 backdrop-blur-md border-b border-slate-800 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-lg">
+    
+    <!-- Left: Brand & Dashboard Tag -->
+    <div class="flex items-center gap-4">
+      <a href="./index.html" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-cyan-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md group-hover:scale-105 transition-transform">
+          <span>OL</span>
+        </div>
+        <div>
+          <span class="font-extrabold tracking-tight text-lg text-white font-editorial uppercase">Opti-Look</span>
+          <span class="hidden sm:inline-block ml-2 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+            Admin Suite v2.6
+          </span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Center: Search Bar -->
+    <div class="hidden md:flex items-center max-w-md w-full mx-8">
+      <div class="relative w-full">
+        <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+        <input 
+          id="global-admin-search" 
+          type="text" 
+          placeholder="Rechercher lunettes, patient, ordonnance, commande..." 
+          class="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 transition-colors"
+        />
+      </div>
+    </div>
+
+    <!-- Right: Quick Actions, Storefront Link & Admin Avatar -->
+    <div class="flex items-center gap-3">
+      
+      <!-- Storefront Backlink -->
+      <a href="./index.html" class="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors">
+        <i data-lucide="external-link" class="w-3.5 h-3.5 text-cyan-400"></i>
+        <span>Voir le Site</span>
+      </a>
+
+      <!-- Quick Add Frame Button -->
+      <button id="open-add-product-modal-top" class="px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center gap-1.5">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span class="hidden sm:inline">Ajouter Monture</span>
+      </button>
+
+      <!-- Admin Profile Pill -->
+      <div class="flex items-center gap-2 pl-2 border-l border-slate-800">
+        <div class="w-8 h-8 rounded-full bg-slate-800 border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold text-xs">
+          <span>DR</span>
+        </div>
+        <div class="hidden lg:block text-left">
+          <span class="block text-xs font-bold text-white leading-none">Dr. Karim Alami</span>
+          <span class="text-[10px] text-slate-400">Optométriste Chef</span>
+        </div>
+      </div>
+
+    </div>
+
+  </header>
+
+  <!-- Main App Layout: Sidebar + Workspace -->
+  <div class="flex-1 flex flex-col md:flex-row">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 bg-[#0E172A] border-r border-slate-800/80 p-4 flex flex-col justify-between shrink-0">
+      
+      <div class="space-y-6">
+        
+        <!-- Navigation Menu -->
+        <div>
+          <span class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Gestion Optique</span>
+          <nav class="mt-2 space-y-1.5">
+            <button class="nav-tab-btn active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-white bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition-all" data-tab="overview">
+              <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+              <span>Tableau de Bord</span>
+            </button>
+
+            <button class="nav-tab-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/60 hover:text-white transition-all" data-tab="products">
+              <div class="flex items-center gap-3">
+                <i data-lucide="glasses" class="w-4 h-4 text-cyan-400"></i>
+                <span>Catalogue Lunettes</span>
+              </div>
+              <span id="badge-products-count" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-800 text-slate-300">6</span>
+            </button>
+
+            <button class="nav-tab-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/60 hover:text-white transition-all" data-tab="appointments">
+              <div class="flex items-center gap-3">
+                <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i>
+                <span>Rendez-vous Examens</span>
+              </div>
+              <span id="badge-appointments-count" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">3</span>
+            </button>
+
+            <button class="nav-tab-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/60 hover:text-white transition-all" data-tab="prescriptions">
+              <div class="flex items-center gap-3">
+                <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
+                <span>Centre Ordonnances</span>
+              </div>
+              <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Nouveau</span>
+            </button>
+
+            <button class="nav-tab-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/60 hover:text-white transition-all" data-tab="orders">
+              <div class="flex items-center gap-3">
+                <i data-lucide="shopping-bag" class="w-4 h-4 text-cyan-400"></i>
+                <span>Commandes Clients</span>
+              </div>
+              <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">4</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Clinic Locations Info -->
+        <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 text-xs">
+          <span class="block font-bold text-white mb-2 flex items-center gap-1.5 text-[11px]">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>Centres Actifs au Maroc</span>
+          </span>
+          <ul class="space-y-1.5 text-[11px] text-slate-400">
+            <li class="flex items-center justify-between">
+              <span>Casablanca Anfa</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            </li>
+            <li class="flex items-center justify-between">
+              <span>Rabat Agdal</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            </li>
+            <li class="flex items-center justify-between">
+              <span>Marrakech Guéliz</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Footer Database Connection Status -->
+      <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span>BDD: opti_look_db</span>
+        </span>
+        <span class="font-bold text-slate-300">MySQL</span>
+      </div>
+
+    </aside>
+
+    <!-- Content Workspace -->
+    <main class="flex-1 p-4 sm:p-8 overflow-y-auto max-w-7xl w-full">
+      
+      <!-- TAB 1: OVERVIEW / DASHBOARD STATS -->
+      <section id="tab-overview" class="admin-tab-content space-y-8">
+        
+        <!-- Header Banner -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white font-editorial tracking-tight uppercase">
+              Tableau de Bord Optométrique
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">
+              Aperçu en temps réel des ventes de montures, consultations en clinique et ordonnances.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition-colors flex items-center gap-2">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+              <span>Imprimer Rapport</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Key Metrics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          
+          <!-- Metric 1: Revenue -->
+          <div class="bg-[#131D31] p-6 rounded-3xl border border-slate-800 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Chiffre d'Affaires</span>
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <i data-lucide="trending-up" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="text-2xl sm:text-3xl font-extrabold text-white font-sans">
+              48 950 <span class="text-sm font-bold text-cyan-400">DH</span>
+            </div>
+            <span class="text-[11px] text-emerald-400 font-semibold mt-1 inline-block">
+              +18.4% ce mois-ci
+            </span>
+          </div>
+
+          <!-- Metric 2: Appointments -->
+          <div class="bg-[#131D31] p-6 rounded-3xl border border-slate-800 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Examens de Vue</span>
+              <div class="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                <i data-lucide="calendar" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="text-2xl sm:text-3xl font-extrabold text-white font-sans">
+              24 <span class="text-sm font-normal text-slate-400">RDV</span>
+            </div>
+            <span class="text-[11px] text-cyan-400 font-semibold mt-1 inline-block">
+              3 aujourd'hui (Casablanca & Rabat)
+            </span>
+          </div>
+
+          <!-- Metric 3: Active Frames -->
+          <div class="bg-[#131D31] p-6 rounded-3xl border border-slate-800 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Montures en Ligne</span>
+              <div class="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center">
+                <i data-lucide="glasses" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="text-2xl sm:text-3xl font-extrabold text-white font-sans">
+              6 <span class="text-sm font-normal text-slate-400">Modèles</span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-medium mt-1 inline-block">
+              100% en stock disponible
+            </span>
+          </div>
+
+          <!-- Metric 4: Pending Prescriptions -->
+          <div class="bg-[#131D31] p-6 rounded-3xl border border-slate-800 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Ordonnances RX</span>
+              <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                <i data-lucide="file-check" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="text-2xl sm:text-3xl font-extrabold text-white font-sans">
+              7 <span class="text-sm font-bold text-amber-400">À Valider</span>
+            </div>
+            <span class="text-[11px] text-amber-400 font-semibold mt-1 inline-block">
+              Calibrage verres requis
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Recent Appointments & Recent Orders Dual Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          <!-- Upcoming Appointments List -->
+          <div class="lg:col-span-7 bg-[#131D31] p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-base font-bold text-white font-sans flex items-center gap-2">
+                <i data-lucide="clock" class="w-4 h-4 text-cyan-400"></i>
+                <span>Prochains Rendez-vous en Clinique</span>
+              </h2>
+              <button class="nav-quick-link text-xs text-cyan-400 hover:text-cyan-300 font-bold" data-tab="appointments">Voir Tout →</button>
+            </div>
+
+            <div id="overview-appointments-list" class="space-y-3">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Recent Orders Stream -->
+          <div class="lg:col-span-5 bg-[#131D31] p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-base font-bold text-white font-sans flex items-center gap-2">
+                <i data-lucide="shopping-bag" class="w-4 h-4 text-emerald-400"></i>
+                <span>Dernières Commandes</span>
+              </h2>
+              <button class="nav-quick-link text-xs text-cyan-400 hover:text-cyan-300 font-bold" data-tab="orders">Gérer →</button>
+            </div>
+
+            <div id="overview-orders-list" class="space-y-3">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- TAB 2: PRODUCTS MANAGEMENT (CRUD) -->
+      <section id="tab-products" class="admin-tab-content hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white font-editorial tracking-tight uppercase">
+              Catalogue des Lunettes
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">
+              Gérez les montures, prix en Dirhams (DH), matières nobles et photos studio.
+            </p>
+          </div>
+
+          <button id="open-add-product-modal" class="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-2">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>Nouvelle Monture</span>
+          </button>
+        </div>
+
+        <!-- Products Table Container -->
+        <div class="bg-[#131D31] rounded-3xl border border-slate-800 overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-900/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                <tr>
+                  <th class="px-6 py-4">Monture & Photo</th>
+                  <th class="px-6 py-4">Catégorie</th>
+                  <th class="px-6 py-4">Matière & Forme</th>
+                  <th class="px-6 py-4">Prix (DH)</th>
+                  <th class="px-6 py-4">Statut</th>
+                  <th class="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-table-body" class="divide-y divide-slate-800">
+                <!-- Injected by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- TAB 3: APPOINTMENTS MANAGEMENT -->
+      <section id="tab-appointments" class="admin-tab-content hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white font-editorial tracking-tight uppercase">
+              Agenda des Examens de Vue
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">
+              Planning des consultations optométriques par boutique (Casablanca, Rabat, Marrakech).
+            </p>
+          </div>
+
+          <!-- Location Filter Chips -->
+          <div class="flex items-center gap-2">
+            <button class="appointment-filter-btn active px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" data-filter="all">Tous</button>
+            <button class="appointment-filter-btn px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700" data-filter="Casablanca">Casablanca</button>
+            <button class="appointment-filter-btn px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700" data-filter="Rabat">Rabat</button>
+            <button class="appointment-filter-btn px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700" data-filter="Marrakech">Marrakech</button>
+          </div>
+        </div>
+
+        <!-- Appointments List -->
+        <div id="appointments-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Injected by JavaScript -->
+        </div>
+
+      </section>
+
+      <!-- TAB 4: PRESCRIPTION RX REVIEWS -->
+      <section id="tab-prescriptions" class="admin-tab-content hidden space-y-6">
+        
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white font-editorial tracking-tight uppercase">
+            Centre des Ordonnances Médicales (Digital RX)
+          </h1>
+          <p class="text-xs text-slate-400 mt-1">
+            Inspection des paramètres de réfraction (Sphère, Cylindre, Axe, Écart Pupillaire) uploadés par les patients.
+          </p>
+        </div>
+
+        <div id="prescriptions-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Injected by JavaScript -->
+        </div>
+
+      </section>
+
+      <!-- TAB 5: ORDERS & SHIPMENTS -->
+      <section id="tab-orders" class="admin-tab-content hidden space-y-6">
+        
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white font-editorial tracking-tight uppercase">
+            Commandes & Expéditions
+          </h1>
+          <p class="text-xs text-slate-400 mt-1">
+            Suivi des livraisons partout au Maroc avec contact direct WhatsApp client.
+          </p>
+        </div>
+
+        <div id="orders-table-container" class="bg-[#131D31] rounded-3xl border border-slate-800 overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-900/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                <tr>
+                  <th class="px-6 py-4">N° Commande</th>
+                  <th class="px-6 py-4">Client & Ville</th>
+                  <th class="px-6 py-4">Monture(s)</th>
+                  <th class="px-6 py-4">Total</th>
+                  <th class="px-6 py-4">Paiement</th>
+                  <th class="px-6 py-4">Statut</th>
+                  <th class="px-6 py-4 text-right">WhatsApp Client</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body" class="divide-y divide-slate-800">
+                <!-- Injected by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL: ADD / EDIT PRODUCT FRAME -->
+  <div id="product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#131D31] border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
+        <h3 class="text-lg font-bold text-white font-sans flex items-center gap-2">
+          <i data-lucide="glasses" class="w-5 h-5 text-cyan-400"></i>
+          <span>Ajouter une Nouvelle Monture</span>
+        </h3>
+        <button id="close-product-modal" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="product-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Nom du Modèle</label>
+          <input type="text" id="p-name" required placeholder="Ex: Aster Titanium Pro" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-400">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Catégorie</label>
+            <select id="p-category" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-400">
+              <option>Vue & Lumière Bleue</option>
+              <option>Solaire Polarisée</option>
+              <option>Titane Japonais</option>
+              <option>Clip-On Magnétique</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Forme</label>
+            <select id="p-shape" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-400">
+              <option>Pantoscope / Ronde</option>
+              <option>Carrée Épurée</option>
+              <option>Aviateur Moderne</option>
+              <option>Clubmaster Hybride</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Prix de Vente (DH)</label>
+            <input type="number" id="p-price" required placeholder="1650" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-400">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Prix Barré (DH)</label>
+            <input type="number" id="p-original-price" placeholder="2400" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-400">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Matière</label>
+          <input type="text" id="p-material" placeholder="Acétate Italien & Titane Bêta" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-400">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Photo Studio de la Monture</label>
+          <select id="p-image" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-400">
+            <option value="./images/hero_glasses_black-transparent.png.png">Black Titanium (Nouveau)</option>
+            <option value="./images/a-close-up-photograph-of-elegant-eyeglas_iL8JZtXgRIiLhdcGUL2Odw_-uOlvARWST-hSO0OCTlfKg.png">Aster Optical Studio</option>
+            <option value="./images/a-high-resolution-photorealistic-close-u_8ff1ZL8LRcyzKIvI18CUFA_MlqbwsMOSJCkWsXX_AvdLg.png">Forma One Titane</option>
+            <option value="./images/a-premium-product-photography-shot-of-sl_VjaK7SnIRSCJTCAs9QL4TQ_B6nUmgWrT1KGnJLc0u2Xmg.png">Nova Sun Solaire</option>
+            <option value="./images/a-premium-studio-photograph-of-a-single-_A3bOFMviSFi-iUeXuGWMbw_sIs-Ee9lRg64aoxh2mDTrA_cover.png">Meridian Navigator</option>
+            <option value="./images/studio-product-photography-of-clip-on-gl_Pa0qWyFZS9-tNwdOEjdqVA_nErwYRL2QsOc7X7q3YITvQ.png">Aura Magnetic Clip</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+          <input type="checkbox" id="p-bestseller" class="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400">
+          <label for="p-bestseller" class="text-xs text-slate-300">Marquer comme Best-seller en Boutique</label>
+        </div>
+
+        <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
+          <button type="button" id="cancel-product-btn" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">Annuler</button>
+          <button type="submit" class="px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold uppercase tracking-wider shadow-md">Enregistrer la Monture</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- JavaScript Admin Logic -->
+  <script type="module" src="./js/admin/admin.js"></script>
+</body>
+
+</html>

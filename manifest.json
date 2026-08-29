@@ -1,0 +1,19 @@
+{
+  "name": "Opti-Look — Haute Lunetterie & Digital Eye-Care",
+  "short_name": "Opti-Look",
+  "description": "Plateforme de haute lunetterie, verres de précision, essayage virtuel et prise de rendez-vous optométrique.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FAFAF8",
+  "theme_color": "#2DBFC3",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232DBFC3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='6' cy='12' r='4'/><circle cx='18' cy='12' r='4'/><path d='M10 12h4'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

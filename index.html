@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Opti-Look — Haute Lunetterie & Digital Eye-Care Platform</title>
+  <meta name="description"
+    content="Découvrez Opti-Look, plateforme de haute lunetterie, verres de précision, essayage virtuel live et prise de rendez-vous optométrique au Maroc." />
+
+  <!-- High-res Optical Favicon (Eliminates 404) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232DBFC3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='6' cy='12' r='4'/><circle cx='18' cy='12' r='4'/><path d='M10 12h4'/></svg>" />
+
+  <!-- PWA Manifest & Offline Capabilities -->
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#2DBFC3" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Suppress Tailwind CDN production notice for clean console -->
+  <script>
+    const _origWarn = console.warn;
+    console.warn = function(...args) {
+      if (typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+      _origWarn.apply(console, args);
+    };
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              slate: '#0F172A',
+              black: '#111111',
+              gold: '#C5A880',
+              turquoise: '#36C6C9',
+              'soft-white': '#FAFAF8',
+              'light-gray': '#EEF1F2',
+              'ice-blue': '#F0F9FF'
+            }
+          },
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            editorial: ['Playfair Display', 'serif'],
+            arabic: ['Alexandria', 'Cairo', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom CSS Styles -->
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+
+<body class="bg-[#FAFAF8] text-[#0F172A] antialiased selection:bg-cyan-500 selection:text-white">
+
+  <!-- Root App Container -->
+  <div id="app"></div>
+
+  <!-- JavaScript ES Module Entry -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+
+</html>
