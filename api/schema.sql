@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `frame_color` VARCHAR(50) NOT NULL,
   `rating` DECIMAL(2,1) DEFAULT 5.0,
   `is_bestseller` BOOLEAN DEFAULT FALSE,
+  `notes` TEXT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -35,6 +36,7 @@ CREATE TABLE IF NOT EXISTS `appointments` (
   `patient_phone` VARCHAR(50) NOT NULL,
   `patient_email` VARCHAR(255) NULL,
   `status` ENUM('pending', 'confirmed', 'completed', 'cancelled') DEFAULT 'confirmed',
+  `notes` TEXT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -50,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `prescriptions` (
   `og_cylinder` VARCHAR(20) NULL,
   `og_axis` VARCHAR(20) NULL,
   `pupillary_distance` VARCHAR(20) NULL,
+  `notes` TEXT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -63,5 +66,6 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `total_amount` DECIMAL(10,2) NOT NULL,
   `payment_method` ENUM('cash_on_delivery', 'card', 'cmi') DEFAULT 'cash_on_delivery',
   `status` ENUM('pending', 'processing', 'shipped', 'delivered') DEFAULT 'pending',
+  `notes` TEXT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

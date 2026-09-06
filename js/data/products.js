@@ -1,5 +1,6 @@
 // Opti-Look Featured Products Catalog with Real Studio Photography
-export const featuredProducts = [
+// Load from localStorage first, then use default products
+const defaultProducts = [
   {
     id: 'aster-optical',
     name: 'Aster Optical',
@@ -137,3 +138,30 @@ export const featuredProducts = [
     ]
   }
 ];
+
+// Load products from localStorage (admin additions) or use defaults
+export const featuredProducts = (() => {
+  try {
+    const storedProducts = localStorage.getItem('optilook_admin_products');
+    if (storedProducts) {
+      const parsed = JSON.parse(storedProducts);
+      // Ensure we have the required fields for each product
+      return parsed.map(p => ({
+        ...p,
+        categoryEn: p.categoryEn || p.category,
+        categoryAr: p.categoryAr || p.category,
+        discount: p.discount || '-20%',
+        rating: p.rating || 5.0,
+        reviewsCount: p.reviewsCount || 1,
+        colors: p.colors || [
+          { name: 'Noir Mat', hex: '#0F172A', active: true },
+          { name: 'Turquoise', hex: '#36C6C9', active: false }
+        ],
+        description: p.description || 'Monture de haute qualité.'
+      }));
+    }
+  } catch (error) {
+    console.warn('Error loading products from localStorage:', error);
+  }
+  return defaultProducts;
+})();
